@@ -1,18 +1,19 @@
 {
-    "name": "tourze/wechat-mini-program-pay-bundle",
-    "description": "微信小程序x微信支付",
-    "type": "symfony-bundle",
-    "require": {
-        "php": "^8.1",
-        "tourze/easy-admin-attribute": "0.1.*"
-    },
-    "autoload": {
-        "psr-4": {
-            "WechatMiniProgramPayBundle\\": "src"
-        }
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^10.0",
-        "phpstan/phpstan": "^2.1"
+  "name": "tourze/wechat-mini-program-pay-bundle",
+  "description": "微信小程序x微信支付",
+  "type": "symfony-bundle",
+  "require": {
+    "php": "^8.1",
+    "tourze/easy-admin-attribute": "0.1.*",
+    "tourze/easy-admin-menu-bundle": "0.1.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "WechatMiniProgramPayBundle\\": "src"
     }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.0",
+    "phpstan/phpstan": "^2.1"
+  }
 }
