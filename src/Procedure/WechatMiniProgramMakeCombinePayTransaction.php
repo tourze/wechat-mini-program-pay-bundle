@@ -4,6 +4,7 @@ namespace WechatMiniProgramPayBundle\Procedure;
 
 use Carbon\Carbon;
 use Doctrine\ORM\EntityManagerInterface;
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -32,6 +33,7 @@ use Yiisoft\Json\Json;
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 #[MethodExpose('WechatMiniProgramMakeCombinePayTransaction')]
 #[Log]
+#[WithMonologChannel('procedure')]
 class WechatMiniProgramMakeCombinePayTransaction extends LockableProcedure
 {
     /**
@@ -52,7 +54,7 @@ class WechatMiniProgramMakeCombinePayTransaction extends LockableProcedure
         private readonly PayOrderRepository $payOrderRepository,
         private readonly RequestStack $requestStack,
         private readonly Security $security,
-        private readonly LoggerInterface $procedureLogger,
+        private readonly LoggerInterface $logger,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
@@ -153,7 +155,7 @@ class WechatMiniProgramMakeCombinePayTransaction extends LockableProcedure
         $response = $response->getBody()->getContents();
         $payOrder->setResponseJson($response);
         $response = Json::decode($response);
-        $this->procedureLogger->info('微信合并下单接口', [
+        $this->logger->info('微信合并下单接口', [
             'request' => $requestJson,
             'response' => $response,
         ]);
