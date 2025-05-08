@@ -4,7 +4,6 @@ namespace WechatMiniProgramPayBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use DoctrineEnhanceBundle\Repository\CommonRepositoryAware;
 use WechatMiniProgramPayBundle\Entity\PaymentNotifyMessage;
 
 /**
@@ -15,7 +14,6 @@ use WechatMiniProgramPayBundle\Entity\PaymentNotifyMessage;
  */
 class PaymentNotifyMessageRepository extends ServiceEntityRepository
 {
-    use CommonRepositoryAware;
 
     public function __construct(ManagerRegistry $registry)
     {
