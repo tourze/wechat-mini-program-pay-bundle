@@ -6,8 +6,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Tourze\Symfony\Async\Attribute\Async;
+use Tourze\WechatMiniProgramUserContracts\UserLoaderInterface;
 use WechatMiniProgramAuthBundle\Entity\User;
-use WechatMiniProgramAuthBundle\Repository\UserRepository;
 use WechatMiniProgramBundle\Service\Client;
 use WechatMiniProgramPayBundle\Event\PayCallbackSuccessEvent;
 use WechatMiniProgramPayBundle\Request\GetPaidUnionIdRequest;
@@ -16,7 +16,7 @@ class PaySuccessGetUnionIdSubscriber
 {
     public function __construct(
         private readonly LoggerInterface $logger,
-        private readonly UserRepository $userRepository,
+        private readonly UserLoaderInterface $userLoader,
         private readonly Client $client,
         private readonly EntityManagerInterface $entityManager,
     ) {
@@ -26,17 +26,15 @@ class PaySuccessGetUnionIdSubscriber
     #[AsEventListener]
     public function onPayCallbackSuccess(PayCallbackSuccessEvent $event): void
     {
-        $user = $this->userRepository->findOneBy([
-            'account' => $event->getAccount(),
-            'openId' => $event->getPayOrder()->getOpenId(),
-        ]);
+        $user = $this->userLoader->loadUserByOpenId($event->getPayOrder()->getOpenId());
+        if ($user?->getUnionId()) {
+            return;
+        }
+
         if (!$user) {
             $user = new User();
             $user->setAccount($event->getAccount());
             $user->setOpenId($event->getPayOrder()->getOpenId());
-        }
-        if ($user->getUnionId()) {
-            return;
         }
 
         $request = new GetPaidUnionIdRequest();
