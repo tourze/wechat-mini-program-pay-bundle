@@ -7,7 +7,6 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Tourze\Symfony\Async\Attribute\Async;
 use Tourze\WechatMiniProgramUserContracts\UserLoaderInterface;
-use WechatMiniProgramAuthBundle\Entity\User;
 use WechatMiniProgramBundle\Service\Client;
 use WechatMiniProgramPayBundle\Event\PayCallbackSuccessEvent;
 use WechatMiniProgramPayBundle\Request\GetPaidUnionIdRequest;
@@ -32,9 +31,7 @@ class PaySuccessGetUnionIdSubscriber
         }
 
         if (!$user) {
-            $user = new User();
-            $user->setAccount($event->getAccount());
-            $user->setOpenId($event->getPayOrder()->getOpenId());
+            $user = $this->userLoader->createUser($event->getAccount(), $event->getPayOrder()->getOpenId());
         }
 
         $request = new GetPaidUnionIdRequest();

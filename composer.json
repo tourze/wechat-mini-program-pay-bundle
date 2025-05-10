@@ -34,6 +34,7 @@
     "tourze/symfony-snowflake-bundle": "0.0.*",
     "tourze/wechat-mini-program-bundle": "0.1.*",
     "tourze/wechat-mini-program-user-contracts": "0.0.*",
+    "tourze/wechat-pay-bundle": "0.0.*",
     "wechatpay/wechatpay": "^1.4",
     "yiisoft/json": "^1.0"
   },
@@ -44,6 +45,11 @@
   "autoload": {
     "psr-4": {
       "WechatMiniProgramPayBundle\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "WechatMiniProgramPayBundle\\Tests\\": "tests"
     }
   }
 }
