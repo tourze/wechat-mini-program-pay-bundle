@@ -5,7 +5,7 @@ namespace WechatMiniProgramPayBundle\EventSubscriber;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
-use Tourze\Symfony\Async\Attribute\Async;
+use Tourze\Symfony\AopAsyncBundle\Attribute\Async;
 use Tourze\WechatMiniProgramUserContracts\UserLoaderInterface;
 use WechatMiniProgramBundle\Service\Client;
 use WechatMiniProgramPayBundle\Event\PayCallbackSuccessEvent;
