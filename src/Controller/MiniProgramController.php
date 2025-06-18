@@ -80,7 +80,7 @@ class MiniProgramController extends AbstractController
             $inWechatpaySignature,
             $platformPublicKeyInstance
         );
-        if ($timeOffsetStatus && $verifiedStatus) {
+        if ($timeOffsetStatus && (bool) $verifiedStatus) {
             // 转换通知的JSON文本消息为PHP Array数组
             $inBodyArray = (array) json_decode((string) $inBody, true, 512, JSON_THROW_ON_ERROR);
             // 使用PHP7的数据解构语法，从Array中解构并赋值变量
@@ -191,7 +191,7 @@ class MiniProgramController extends AbstractController
             $inWechatpaySignature,
             $platformPublicKeyInstance
         );
-        if ($timeOffsetStatus && $verifiedStatus) {
+        if ($timeOffsetStatus && (bool) $verifiedStatus) {
             // 转换通知的JSON文本消息为PHP Array数组
             $inBodyArray = (array) json_decode((string) $inBody, true, 512, JSON_THROW_ON_ERROR);
             // 使用PHP7的数据解构语法，从Array中解构并赋值变量
