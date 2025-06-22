@@ -26,11 +26,11 @@ class PaySuccessGetUnionIdSubscriber
     public function onPayCallbackSuccess(PayCallbackSuccessEvent $event): void
     {
         $user = $this->userLoader->loadUserByOpenId($event->getPayOrder()->getOpenId());
-        if ($user?->getUnionId()) {
+        if (null !== $user?->getUnionId()) {
             return;
         }
 
-        if (!$user) {
+        if (null === $user) {
             $user = $this->userLoader->createUser($event->getAccount(), $event->getPayOrder()->getOpenId());
         }
 
@@ -48,8 +48,15 @@ class PaySuccessGetUnionIdSubscriber
             return;
         }
 
-        $user->setUnionId($response['unionid']);
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        if (method_exists($user, 'setUnionId')) {
+            $user->setUnionId($response['unionid']);
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
+        } else {
+            $this->logger->warning('User object does not have setUnionId method', [
+                'user_class' => get_class($user),
+                'unionid' => $response['unionid'],
+            ]);
+        }
     }
 }

@@ -29,7 +29,7 @@ class PaymentNotifyMessageTest extends TestCase
     
     public function testGetSetCreateTime(): void
     {
-        $createdAt = new \DateTime();
+        $createdAt = new \DateTimeImmutable();
         $this->entity->setCreateTime($createdAt);
         $this->assertSame($createdAt, $this->entity->getCreateTime());
     }
@@ -38,6 +38,6 @@ class PaymentNotifyMessageTest extends TestCase
     {
         // 测试流式接口（返回 $this）
         $this->assertSame($this->entity, $this->entity->setRawData('test'));
-        $this->assertSame($this->entity, $this->entity->setCreateTime(new \DateTime()));
+        $this->assertSame($this->entity, $this->entity->setCreateTime(new \DateTimeImmutable()));
     }
 } 

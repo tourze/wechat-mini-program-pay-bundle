@@ -2,7 +2,7 @@
 
 namespace WechatMiniProgramPayBundle\Procedure;
 
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
@@ -61,13 +61,13 @@ class WechatMiniProgramMakeCombinePayTransaction extends LockableProcedure
 
     public function execute(): array
     {
-        if (!$this->accountRepository) {
+        if (null === $this->accountRepository) {
             throw new ApiException('找不到微信小程序服务，请联系管理员');
         }
         $account = $this->accountRepository->findOneBy([
             'appId' => $this->appId,
         ]);
-        if (!$account) {
+        if (null === $account) {
             throw new ApiException('找不到小程序');
         }
 
@@ -80,7 +80,7 @@ class WechatMiniProgramMakeCombinePayTransaction extends LockableProcedure
         $attach = ['wechat-combine' => []];
         foreach ($this->payOrderIds as $payOrderId) {
             $entity = $this->payOrderRepository->find($payOrderId);
-            if (!$entity) {
+            if (null === $entity) {
                 throw new ApiException("找不到子订单[{$payOrderId}]");
             }
 
@@ -100,10 +100,10 @@ class WechatMiniProgramMakeCombinePayTransaction extends LockableProcedure
         $payOrder->setAppId($account->getAppId());
         $payOrder->setMchId($payConfig->getMchId());
         $payOrder->setTradeType('COMBINE'); // 微信支付实际没这种 tradeType 的，这里我直接挪用
-        $payOrder->setTradeNo(Carbon::now()->format('YmdHis') . random_int(100000, 999999));
+        $payOrder->setTradeNo(CarbonImmutable::now()->format('YmdHis') . random_int(100000, 999999));
         $payOrder->setAttach($attach);
 
-        $startTime = Carbon::now();
+        $startTime = CarbonImmutable::now();
         $expireTime = $startTime->clone()->addMinutes(15);
         $payOrder->setStartTime($startTime);
         $payOrder->setExpireTime($expireTime);

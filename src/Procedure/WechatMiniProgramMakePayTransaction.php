@@ -68,11 +68,11 @@ class WechatMiniProgramMakePayTransaction extends LockableProcedure
 
     public function execute(): array
     {
-        if (!$this->accountService) {
+        if (null === $this->accountService) {
             throw new ApiException('找不到微信小程序服务，请联系管理员');
         }
         $account = $this->accountService->detectAccountFromRequest($this->requestStack->getMainRequest(), $this->appId);
-        if (!$account) {
+        if (null === $account) {
             throw new ApiException('找不到小程序');
         }
 
@@ -84,7 +84,7 @@ class WechatMiniProgramMakePayTransaction extends LockableProcedure
                 'mchId' => $this->mchId,
             ]);
         }
-        if (!$merchant) {
+        if (null === $merchant) {
             throw new ApiException('找不到支付配置');
         }
 
@@ -109,7 +109,7 @@ class WechatMiniProgramMakePayTransaction extends LockableProcedure
         // 保存支付订单
         $this->entityManager->persist($payOrder);
         $this->entityManager->flush();
-        if (!$payOrder->getPrepayId()) {
+        if (null === $payOrder->getPrepayId()) {
             throw new ApiException('找不到预支付交易会话标识');
         }
 

@@ -59,7 +59,7 @@ class WechatMiniProgramMakeRefundTransaction extends LockableProcedure
         $account = $this->accountRepository->findOneBy([
             'appId' => $this->appId,
         ]);
-        if (!$account) {
+        if (null === $account) {
             throw new ApiException('找不到小程序');
         }
 
@@ -67,7 +67,7 @@ class WechatMiniProgramMakeRefundTransaction extends LockableProcedure
             'appId' => $account->getAppId(),
             'id' => $this->payOrderId,
         ]);
-        if (!$payOrder) {
+        if (null === $payOrder) {
             throw new ApiException('找不到原支付单号');
         }
 

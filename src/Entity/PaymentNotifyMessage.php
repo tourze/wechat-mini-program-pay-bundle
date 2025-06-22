@@ -17,9 +17,6 @@ class PaymentNotifyMessage implements Stringable
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
     private ?int $id = 0;
 
-    /**
-     * 这里存储的是反序列后又序列化的原始数据.
-     */
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '原始数据'])]
     private ?string $rawData = null;
 
