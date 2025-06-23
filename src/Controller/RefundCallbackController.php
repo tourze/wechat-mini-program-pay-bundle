@@ -14,14 +14,12 @@ use WeChatPay\Crypto\AesGcm;
 use WeChatPay\Crypto\Rsa;
 use WeChatPay\Formatter;
 use WechatPayBundle\Entity\RefundOrder;
-use WechatPayBundle\Repository\RefundOrderRepository;
 
 class RefundCallbackController extends AbstractController
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
-        private readonly RefundOrderRepository $refundOrderRepository,
     ) {
     }
 

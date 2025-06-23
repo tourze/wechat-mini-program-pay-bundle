@@ -18,7 +18,6 @@ use WeChatPay\Crypto\Rsa;
 use WeChatPay\Formatter;
 use WechatPayBundle\Entity\PayOrder;
 use WechatPayBundle\Enum\PayOrderStatus;
-use WechatPayBundle\Repository\PayOrderRepository;
 
 class PayCallbackController extends AbstractController
 {
@@ -26,7 +25,6 @@ class PayCallbackController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
         private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly PayOrderRepository $payOrderRepository,
     ) {
     }
 

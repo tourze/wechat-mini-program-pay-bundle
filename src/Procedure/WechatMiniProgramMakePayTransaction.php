@@ -17,7 +17,6 @@ use WechatMiniProgramBundle\Service\AccountService;
 use WechatPayBundle\Entity\PayOrder;
 use WechatPayBundle\Enum\PayOrderStatus;
 use WechatPayBundle\Repository\MerchantRepository;
-use WechatPayBundle\Repository\PayOrderRepository;
 
 /**
  * 微信小程序获取支付参数
@@ -56,7 +55,6 @@ class WechatMiniProgramMakePayTransaction extends LockableProcedure
 
     public function __construct(
         private readonly ?AccountService $accountService,
-        private readonly PayOrderRepository $payOrderRepository,
         private readonly MerchantRepository $merchantRepository,
         private readonly RequestStack $requestStack,
         private readonly Snowflake $snowflake,

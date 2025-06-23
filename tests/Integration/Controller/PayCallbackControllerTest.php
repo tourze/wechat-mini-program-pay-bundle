@@ -14,14 +14,12 @@ use WechatMiniProgramPayBundle\Controller\PayCallbackController;
 use WechatPayBundle\Entity\Merchant;
 use WechatPayBundle\Entity\PayOrder;
 use WechatPayBundle\Enum\PayOrderStatus;
-use WechatPayBundle\Repository\PayOrderRepository;
 
 class PayCallbackControllerTest extends TestCase
 {
     private EntityManagerInterface|MockObject $entityManager;
     private LoggerInterface|MockObject $logger;
     private EventDispatcherInterface|MockObject $eventDispatcher;
-    private PayOrderRepository|MockObject $payOrderRepository;
     private PayCallbackController $controller;
     private Account $account;
     private PayOrder $payOrder;
@@ -59,14 +57,12 @@ class PayCallbackControllerTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
-        $this->payOrderRepository = $this->createMock(PayOrderRepository::class);
 
         // 创建controller
         $this->controller = new PayCallbackController(
             $this->entityManager,
             $this->logger,
-            $this->eventDispatcher,
-            $this->payOrderRepository
+            $this->eventDispatcher
         );
 
         // 创建测试所需的实体

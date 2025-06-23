@@ -2,13 +2,10 @@
 
 namespace WechatMiniProgramPayBundle\Controller;
 
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use WechatMiniProgramBundle\Entity\Account;
 use WechatPayBundle\Entity\PayOrder;
-use WechatPayBundle\Repository\PayOrderRepository;
 
 /**
  * 合单支付回调
@@ -17,11 +14,7 @@ use WechatPayBundle\Repository\PayOrderRepository;
  */
 class CombinePayCallbackController extends AbstractController
 {
-    public function __construct(
-        private readonly LoggerInterface $logger,
-        private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly PayOrderRepository $payOrderRepository,
-    ) {
+    public function __construct() {
     }
 
     #[Route(path: '/wechat-payment/mini-program/combine-pay/{appId}', name: 'wechat_mini_program_combine_pay_callback', methods: ['POST'])]

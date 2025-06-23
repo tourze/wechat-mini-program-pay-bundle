@@ -18,9 +18,9 @@ use Tourze\JsonRPCLogBundle\Attribute\Log;
 use WechatMiniProgramBundle\Repository\AccountRepository;
 use WeChatPay\Crypto\Rsa;
 use WeChatPay\Formatter;
-use WechatPayBundle\Entity\Merchant;
 use WechatPayBundle\Entity\PayOrder;
 use WechatPayBundle\Enum\PayOrderStatus;
+use WechatPayBundle\Repository\MerchantRepository;
 use WechatPayBundle\Repository\PayOrderRepository;
 use WechatPayBundle\Service\WechatPayBuilder;
 use Yiisoft\Json\Json;
@@ -52,6 +52,7 @@ class WechatMiniProgramMakeCombinePayTransaction extends LockableProcedure
         private readonly WechatPayBuilder $payBuilder,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly PayOrderRepository $payOrderRepository,
+        private readonly MerchantRepository $merchantRepository,
         private readonly RequestStack $requestStack,
         private readonly Security $security,
         private readonly LoggerInterface $logger,
@@ -90,15 +91,18 @@ class WechatMiniProgramMakeCombinePayTransaction extends LockableProcedure
 
         $attach = Json::encode($attach);
 
-        /** @var Merchant $payConfig */
-        $payConfig = $account->getPayConfigs()[0];
+        // 获取默认的商户配置
+        $merchant = $this->merchantRepository->findOneBy([], ['id' => 'DESC']);
+        if (null === $merchant) {
+            throw new ApiException('找不到支付配置');
+        }
 
         // 生成支付单
         $payOrder = new PayOrder();
-        $payOrder->setMerchant($payConfig);
+        $payOrder->setMerchant($merchant);
         $payOrder->setStatus(PayOrderStatus::INIT);
         $payOrder->setAppId($account->getAppId());
-        $payOrder->setMchId($payConfig->getMchId());
+        $payOrder->setMchId($merchant->getMchId());
         $payOrder->setTradeType('COMBINE'); // 微信支付实际没这种 tradeType 的，这里我直接挪用
         $payOrder->setTradeNo(CarbonImmutable::now()->format('YmdHis') . random_int(100000, 999999));
         $payOrder->setAttach($attach);
@@ -122,7 +126,7 @@ class WechatMiniProgramMakeCombinePayTransaction extends LockableProcedure
 
         $requestJson = [
             'combine_appid' => $account->getAppId(),
-            'combine_mchid' => $payConfig->getMchId(),
+            'combine_mchid' => $merchant->getMchId(),
             'combine_out_trade_no' => $payOrder->getTradeNo(),
             'time_expire' => $payOrder->getExpireTime()->format('Y-m-dTH:i:s+08:00'),
             'notify_url' => $payOrder->getNotifyUrl(),
@@ -148,7 +152,7 @@ class WechatMiniProgramMakeCombinePayTransaction extends LockableProcedure
         }
 
         $payOrder->setRequestJson(Json::encode($requestJson));
-        $builder = $this->payBuilder->genBuilder($payConfig);
+        $builder = $this->payBuilder->genBuilder($merchant);
         $response = $builder->chain('v3/combine-transactions/jsapi')->post([
             'json' => $requestJson,
         ]);
@@ -175,7 +179,7 @@ class WechatMiniProgramMakeCombinePayTransaction extends LockableProcedure
         }
 
         // @link https://github.com/wechatpay-apiv3/wechatpay-php#%E7%AD%BE%E5%90%8D
-        $merchantPrivateKeyInstance = Rsa::from($payConfig->getPemKey());
+        $merchantPrivateKeyInstance = Rsa::from($merchant->getPemKey());
         $params = [
             'appId' => $account->getAppId(),
             'timeStamp' => (string) Formatter::timestamp(),

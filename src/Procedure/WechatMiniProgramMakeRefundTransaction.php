@@ -12,7 +12,6 @@ use Tourze\JsonRPCLogBundle\Attribute\Log;
 use WechatMiniProgramBundle\Repository\AccountRepository;
 use WechatPayBundle\Entity\RefundOrder;
 use WechatPayBundle\Repository\PayOrderRepository;
-use WechatPayBundle\Repository\RefundOrderRepository;
 
 /**
  * 微信退款接口
@@ -49,7 +48,6 @@ class WechatMiniProgramMakeRefundTransaction extends LockableProcedure
     public function __construct(
         private readonly AccountRepository $accountRepository,
         private readonly PayOrderRepository $payOrderRepository,
-        private readonly RefundOrderRepository $refundOrderRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
