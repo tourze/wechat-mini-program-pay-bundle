@@ -16,12 +16,12 @@ use WechatPayBundle\Repository\PayOrderRepository;
  *
  * @see https://pay.weixin.qq.com/wiki/doc/apiv3/open/pay/chapter2_8_0.shtml
  */
-#[IsGranted('IS_AUTHENTICATED_FULLY')]
+#[IsGranted(attribute: 'IS_AUTHENTICATED_FULLY')]
 #[Log]
-#[MethodExpose('WechatMiniProgramGetPayConfig')]
+#[MethodExpose(method: 'WechatMiniProgramGetPayConfig')]
 class WechatMiniProgramGetPayConfig extends LockableProcedure
 {
-    #[MethodParam('支付单号')]
+    #[MethodParam(description: '支付单号')]
     public string $payOrderId;
 
     public function __construct(

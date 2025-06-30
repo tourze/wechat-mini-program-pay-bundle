@@ -5,6 +5,7 @@ namespace WechatMiniProgramPayBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Attribute\Route;
 use WechatMiniProgramBundle\Entity\Account;
+use WechatMiniProgramPayBundle\Exception\PaymentNotImplementedException;
 use WechatPayBundle\Entity\PayOrder;
 
 /**
@@ -20,6 +21,6 @@ class CombinePayCallbackController extends AbstractController
     #[Route(path: '/wechat-payment/mini-program/combine-pay/{appId}', name: 'wechat_mini_program_combine_pay_callback', methods: ['POST'])]
     public function __invoke(Account $account, PayOrder $order): never
     {
-        throw new \LogicException('合单支付回调待实现');
+        throw new PaymentNotImplementedException('合单支付回调待实现');
     }
 }

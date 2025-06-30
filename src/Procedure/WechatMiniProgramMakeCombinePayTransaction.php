@@ -30,10 +30,10 @@ use Yiisoft\Json\Json;
  *
  * @see https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter5_1_4.shtml
  */
-#[IsGranted('IS_AUTHENTICATED_FULLY')]
-#[MethodExpose('WechatMiniProgramMakeCombinePayTransaction')]
+#[IsGranted(attribute: 'IS_AUTHENTICATED_FULLY')]
+#[MethodExpose(method: 'WechatMiniProgramMakeCombinePayTransaction')]
 #[Log]
-#[WithMonologChannel('procedure')]
+#[WithMonologChannel(channel: 'procedure')]
 class WechatMiniProgramMakeCombinePayTransaction extends LockableProcedure
 {
     /**

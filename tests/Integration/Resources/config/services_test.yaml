@@ -6,10 +6,10 @@ services:
 
   # 将所有controller设为公共服务，方便在测试中获取
   WechatMiniProgramPayBundle\Controller\:
-    resource: '../../../../../src/Controller/'
+    resource: '../../../../src/Controller/'
     public: true
 
   # 事件测试相关服务
   WechatMiniProgramPayBundle\Event\:
-    resource: '../../../../../src/Event/'
+    resource: '../../../../src/Event/'
     public: true 

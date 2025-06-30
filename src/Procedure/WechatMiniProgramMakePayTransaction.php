@@ -23,18 +23,18 @@ use WechatPayBundle\Repository\MerchantRepository;
  *
  * @see https://pay.weixin.qq.com/wiki/doc/apiv3/open/pay/chapter2_8_0.shtml
  */
-#[IsGranted('IS_AUTHENTICATED_FULLY')]
+#[IsGranted(attribute: 'IS_AUTHENTICATED_FULLY')]
 #[Log]
-#[MethodExpose('WechatMiniProgramMakePayTransaction')]
+#[MethodExpose(method: 'WechatMiniProgramMakePayTransaction')]
 class WechatMiniProgramMakePayTransaction extends LockableProcedure
 {
-    #[MethodParam('当前小程序的AppID')]
+    #[MethodParam(description: '当前小程序的AppID')]
     public string $appId = '';
 
-    #[MethodParam('商户ID')]
+    #[MethodParam(description: '商户ID')]
     public string $mchId = '';
 
-    #[MethodParam('币种')]
+    #[MethodParam(description: '币种')]
     public string $currency = 'CNY';
 
     /**

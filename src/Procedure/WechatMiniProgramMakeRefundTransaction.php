@@ -19,9 +19,9 @@ use WechatPayBundle\Repository\PayOrderRepository;
  * @see https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_1_9.shtml
  * @see https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_1_10.shtml
  */
-#[MethodExpose('WechatMiniProgramMakeRefundTransaction')]
+#[MethodExpose(method: 'WechatMiniProgramMakeRefundTransaction')]
 #[Log]
-#[IsGranted('IS_AUTHENTICATED_FULLY')]
+#[IsGranted(attribute: 'IS_AUTHENTICATED_FULLY')]
 class WechatMiniProgramMakeRefundTransaction extends LockableProcedure
 {
     /**

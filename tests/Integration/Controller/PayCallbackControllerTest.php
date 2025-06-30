@@ -42,14 +42,6 @@ class PayCallbackControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    /**
-     * @group skip
-     */
-    public function testPayCallbackWithInvalidSignature(): void
-    {
-        // 这个测试需要更复杂的设置，包括模拟微信的签名等
-        $this->markTestSkipped('需要模拟复杂的微信签名验证');
-    }
     
     protected function setUp(): void
     {
