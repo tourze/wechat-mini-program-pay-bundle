@@ -18,3 +18,9 @@ services:
     resource: '../../Repository/'
   WechatMiniProgramPayBundle\Service\:
     resource: '../../Service/'
+    public: true
+
+  # EasyAdmin 菜单服务
+  WechatMiniProgramPayBundle\Service\AdminMenu:
+    tags:
+      - { name: 'easy_admin_menu.provider' }

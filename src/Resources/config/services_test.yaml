@@ -1,0 +1,9 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  # DataFixtures 仅在测试环境中加载
+  WechatMiniProgramPayBundle\DataFixtures\:
+    resource: '../../DataFixtures/'
+    public: true

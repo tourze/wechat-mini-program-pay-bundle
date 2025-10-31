@@ -5,7 +5,7 @@ namespace WechatMiniProgramPayBundle\Request;
 use WechatMiniProgramBundle\Request\WithAccountRequest;
 
 /**
- * 支付后获取 Unionid
+ * 支付后获取 Unionid.
  *
  * 该接口用于在用户支付完成后，获调用本接口前需要用户完成支付，用户支付完成后，取该用户的 UnionId，无需用户授权。本接口支付后的五分钟内有效。
  *
@@ -38,6 +38,7 @@ class GetPaidUnionIdRequest extends WithAccountRequest
         return '/wxa/getpaidunionid';
     }
 
+    /** @return array<string, mixed>|null */
     public function getRequestOptions(): ?array
     {
         $json = [

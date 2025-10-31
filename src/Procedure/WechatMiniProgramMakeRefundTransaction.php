@@ -5,7 +5,9 @@ namespace WechatMiniProgramPayBundle\Procedure;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Constraints as Assert;
+use Tourze\JsonRPC\Core\Attribute\MethodDoc;
 use Tourze\JsonRPC\Core\Attribute\MethodExpose;
+use Tourze\JsonRPC\Core\Attribute\MethodTag;
 use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\JsonRPCLockBundle\Procedure\LockableProcedure;
 use Tourze\JsonRPCLogBundle\Attribute\Log;
@@ -14,12 +16,14 @@ use WechatPayBundle\Entity\RefundOrder;
 use WechatPayBundle\Repository\PayOrderRepository;
 
 /**
- * 微信退款接口
+ * 微信退款接口.
  *
  * @see https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_1_9.shtml
  * @see https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_1_10.shtml
  */
+#[MethodDoc(summary: '微信退款接口')]
 #[MethodExpose(method: 'WechatMiniProgramMakeRefundTransaction')]
+#[MethodTag(name: '微信支付')]
 #[Log]
 #[IsGranted(attribute: 'IS_AUTHENTICATED_FULLY')]
 class WechatMiniProgramMakeRefundTransaction extends LockableProcedure
@@ -52,6 +56,9 @@ class WechatMiniProgramMakeRefundTransaction extends LockableProcedure
     ) {
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function execute(): array
     {
         $account = $this->accountRepository->findOneBy([

@@ -3,29 +3,38 @@
 namespace WechatMiniProgramPayBundle\Procedure;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Monolog\Attribute\WithMonologChannel;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Constraints as Assert;
+use Tourze\JsonRPC\Core\Attribute\MethodDoc;
 use Tourze\JsonRPC\Core\Attribute\MethodExpose;
 use Tourze\JsonRPC\Core\Attribute\MethodParam;
+use Tourze\JsonRPC\Core\Attribute\MethodTag;
 use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\JsonRPCLockBundle\Procedure\LockableProcedure;
 use Tourze\JsonRPCLogBundle\Attribute\Log;
 use Tourze\SnowflakeBundle\Service\Snowflake;
+use WechatMiniProgramBundle\Entity\Account;
 use WechatMiniProgramBundle\Service\AccountService;
+use WechatPayBundle\Entity\Merchant;
 use WechatPayBundle\Entity\PayOrder;
 use WechatPayBundle\Enum\PayOrderStatus;
 use WechatPayBundle\Repository\MerchantRepository;
 
 /**
- * 微信小程序获取支付参数
+ * 微信小程序获取支付参数.
  *
  * @see https://pay.weixin.qq.com/wiki/doc/apiv3/open/pay/chapter2_8_0.shtml
  */
 #[IsGranted(attribute: 'IS_AUTHENTICATED_FULLY')]
 #[Log]
+#[MethodDoc(summary: '微信小程序获取支付参数')]
 #[MethodExpose(method: 'WechatMiniProgramMakePayTransaction')]
+#[MethodTag(name: '微信支付')]
+#[WithMonologChannel(channel: 'wechat_mini_program_pay')]
 class WechatMiniProgramMakePayTransaction extends LockableProcedure
 {
     #[MethodParam(description: '当前小程序的AppID')]
@@ -61,10 +70,23 @@ class WechatMiniProgramMakePayTransaction extends LockableProcedure
         private readonly WechatMiniProgramGetPayConfig $payConfigApi,
         private readonly Security $security,
         private readonly EntityManagerInterface $entityManager,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function execute(): array
+    {
+        $account = $this->getAccount();
+        $merchant = $this->getMerchant();
+        $payOrder = $this->createPayOrder($account, $merchant);
+
+        return $this->generatePaymentConfig($payOrder);
+    }
+
+    private function getAccount(): Account
     {
         if (null === $this->accountService) {
             throw new ApiException('找不到微信小程序服务，请联系管理员');
@@ -74,19 +96,25 @@ class WechatMiniProgramMakePayTransaction extends LockableProcedure
             throw new ApiException('找不到小程序');
         }
 
-        // 如果没声明，我们就取第一个支付配置
-        if (empty($this->mchId)) {
+        return $account;
+    }
+
+    private function getMerchant(): Merchant
+    {
+        if ('' === $this->mchId) {
             $merchant = $this->merchantRepository->findOneBy([], ['id' => 'DESC']);
         } else {
-            $merchant = $this->merchantRepository->findOneBy([
-                'mchId' => $this->mchId,
-            ]);
+            $merchant = $this->merchantRepository->findOneBy(['mchId' => $this->mchId]);
         }
         if (null === $merchant) {
             throw new ApiException('找不到支付配置');
         }
 
-        // 生成支付单
+        return $merchant;
+    }
+
+    private function createPayOrder(Account $account, Merchant $merchant): PayOrder
+    {
         $payOrder = new PayOrder();
         $payOrder->setMerchant($merchant);
         $payOrder->setStatus(PayOrderStatus::INIT);
@@ -96,23 +124,66 @@ class WechatMiniProgramMakePayTransaction extends LockableProcedure
         $payOrder->setTradeNo("WP{$this->snowflake->id()}");
         $payOrder->setAttach($this->attach);
         $payOrder->setDescription($this->description);
-
-        // 费用情况
         $payOrder->setTotalFee($this->money);
         $payOrder->setFeeType($this->currency);
 
-        // 支付者信息
-        $payOrder->setOpenId($this->security->getUser()->getUserIdentifier());
+        $user = $this->security->getUser();
+        if (null === $user) {
+            throw new ApiException('用户未登录');
+        }
+        $payOrder->setOpenId($user->getUserIdentifier());
 
-        // 保存支付订单
         $this->entityManager->persist($payOrder);
         $this->entityManager->flush();
+
         if (null === $payOrder->getPrepayId()) {
             throw new ApiException('找不到预支付交易会话标识');
         }
 
-        $this->payConfigApi->payOrderId = $payOrder->getId();
+        return $payOrder;
+    }
 
-        return $this->payConfigApi->execute();
+    /**
+     * @return array<string, mixed>
+     */
+    private function generatePaymentConfig(PayOrder $payOrder): array
+    {
+        $payOrderId = $payOrder->getId();
+        if (null === $payOrderId) {
+            throw new ApiException('支付订单ID为空');
+        }
+        $this->payConfigApi->payOrderId = $payOrderId;
+
+        $startTime = microtime(true);
+        $this->logger->info('微信小程序获取支付配置接口请求开始', [
+            'pay_order_id' => $payOrder->getId(),
+            'app_id' => $payOrder->getAppId(),
+            'trade_no' => $payOrder->getTradeNo(),
+        ]);
+
+        try {
+            $result = $this->payConfigApi->execute();
+            $endTime = microtime(true);
+            $this->logger->info('微信小程序获取支付配置接口请求成功', [
+                'pay_order_id' => $payOrder->getId(),
+                'app_id' => $payOrder->getAppId(),
+                'trade_no' => $payOrder->getTradeNo(),
+                'response_time' => round(($endTime - $startTime) * 1000, 2) . 'ms',
+                'response_size' => strlen((string) json_encode($result)) . ' bytes',
+            ]);
+
+            return $result;
+        } catch (\Throwable $e) {
+            $endTime = microtime(true);
+            $this->logger->error('微信小程序获取支付配置接口请求失败', [
+                'pay_order_id' => $payOrder->getId(),
+                'app_id' => $payOrder->getAppId(),
+                'trade_no' => $payOrder->getTradeNo(),
+                'response_time' => round(($endTime - $startTime) * 1000, 2) . 'ms',
+                'error_message' => $e->getMessage(),
+                'error_type' => get_class($e),
+            ]);
+            throw $e;
+        }
     }
 }

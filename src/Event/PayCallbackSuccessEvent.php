@@ -13,6 +13,7 @@ class PayCallbackSuccessEvent extends Event
 
     private Account $account;
 
+    /** @var array<string, mixed> */
     private array $decryptData = [];
 
     private ?Response $response = null;
@@ -37,11 +38,13 @@ class PayCallbackSuccessEvent extends Event
         $this->account = $account;
     }
 
+    /** @return array<string, mixed> */
     public function getDecryptData(): array
     {
         return $this->decryptData;
     }
 
+    /** @param array<string, mixed> $decryptData */
     public function setDecryptData(array $decryptData): void
     {
         $this->decryptData = $decryptData;
