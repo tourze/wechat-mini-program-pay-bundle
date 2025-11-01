@@ -33,7 +33,7 @@
     "tourze/doctrine-indexed-bundle": "1.0.*",
     "tourze/easy-admin-menu-bundle": "1.0.*",
     "tourze/json-rpc-core": "1.0.*",
-    "tourze/json-rpc-lock-bundle": "0.1.*",
+    "tourze/json-rpc-lock-bundle": "1.0.*",
     "tourze/json-rpc-log-bundle": "0.1.*",
     "tourze/payment-contracts": "0.0.*",
     "tourze/symfony-aop-async-bundle": "0.0.*",
