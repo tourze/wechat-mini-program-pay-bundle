@@ -2,7 +2,7 @@
 
 namespace WechatMiniProgramPayBundle\Tests\Request;
 
-use HttpClientBundle\Tests\Request\RequestTestCase;
+use HttpClientBundle\Test\RequestTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use WechatMiniProgramPayBundle\Request\GetPaidUnionIdRequest;
 
