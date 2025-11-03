@@ -369,7 +369,7 @@ class XmlUtilsTest extends TestCase
     public function testBuildXmlElementWithObject(): void
     {
         // Test with an object that has __toString method
-        $object = new class {
+        $object = new class () {
             public function __toString(): string
             {
                 return 'object_string_value';

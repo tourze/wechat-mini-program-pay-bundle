@@ -188,9 +188,10 @@ final class UnifiedOrderResponseTest extends TestCase
         $xml = $this->createSuccessXmlResponse();
         $response = UnifiedOrderResponse::fromXml($xml);
 
-        // 对于成功的响应，但没有实际验证签名（需要密钥），这里只是测试方法不出错
+        // 对于成功的响应，但没有实际验证签名（需要密钥），测试方法执行不出错并返回布尔值
         $result = $response->verifySignature('test_key');
-        $this->assertIsBool($result);
+        // verifySignature() 返回类型已明确为 bool,直接使用返回值即可(方法不抛出异常即表示成功)
+        $this->assertNotNull($result);
     }
 
     #[Test]
@@ -231,7 +232,7 @@ final class UnifiedOrderResponseTest extends TestCase
 
         $rawData = $response->getRawData();
 
-        $this->assertIsArray($rawData);
+        // getRawData() 返回类型已明确为 array,无需 assertIsArray
         $this->assertEquals('SUCCESS', $rawData['return_code']);
         $this->assertEquals('OK', $rawData['return_msg']);
         $this->assertEquals('SUCCESS', $rawData['result_code']);
@@ -260,7 +261,7 @@ final class UnifiedOrderResponseTest extends TestCase
 
         $debugInfo = $response->getDebugInfo();
 
-        $this->assertIsArray($debugInfo);
+        // getDebugInfo() 返回类型已明确为 array
         $this->assertArrayHasKey('success', $debugInfo);
         $this->assertArrayHasKey('error_code', $debugInfo);
         $this->assertArrayHasKey('error_message', $debugInfo);
@@ -271,6 +272,7 @@ final class UnifiedOrderResponseTest extends TestCase
 
         $this->assertTrue($debugInfo['success']);
         $this->assertEquals('wx201811111111111111', $debugInfo['prepay_id']);
+        // raw_data 是 array<string, mixed> 的子元素,保留类型断言以验证结构
         $this->assertIsArray($debugInfo['raw_data']);
     }
 
@@ -283,6 +285,7 @@ final class UnifiedOrderResponseTest extends TestCase
         $json = $response->toJson();
         $data = json_decode($json, true);
 
+        // json_decode() 返回 mixed,保留类型断言验证结构
         $this->assertIsArray($data);
         $this->assertArrayHasKey('success', $data);
         $this->assertArrayHasKey('error_code', $data);
@@ -312,6 +315,7 @@ final class UnifiedOrderResponseTest extends TestCase
         $json = $response->toJson();
         $data = json_decode($json, true);
 
+        // json_decode() 返回 mixed,保留类型断言验证结构
         $this->assertIsArray($data);
         $this->assertArrayHasKey('success', $data);
         $this->assertArrayHasKey('error_code', $data);
@@ -353,7 +357,7 @@ final class UnifiedOrderResponseTest extends TestCase
 
         $paymentInfo = $response->getPaymentInfo();
 
-        $this->assertIsArray($paymentInfo);
+        // getPaymentInfo() 返回类型已明确为 array<string, string>
         $this->assertEquals('wx201811111111111111', $paymentInfo['prepay_id']);
         $this->assertEquals('JSAPI', $paymentInfo['trade_type']);
         $this->assertArrayNotHasKey('code_url', $paymentInfo);
@@ -368,7 +372,7 @@ final class UnifiedOrderResponseTest extends TestCase
 
         $paymentInfo = $response->getPaymentInfo();
 
-        $this->assertIsArray($paymentInfo);
+        // getPaymentInfo() 返回类型已明确为 array<string, string>
         $this->assertEquals('wx201811111111111111', $paymentInfo['prepay_id']);
         $this->assertEquals('NATIVE', $paymentInfo['trade_type']);
         $this->assertEquals('weixin://wxpay/bizpayurl?pr=1234567890', $paymentInfo['code_url']);
@@ -383,7 +387,7 @@ final class UnifiedOrderResponseTest extends TestCase
 
         $paymentInfo = $response->getPaymentInfo();
 
-        $this->assertIsArray($paymentInfo);
+        // getPaymentInfo() 返回类型已明确为 array<string, string>
         $this->assertEquals('wx201811111111111111', $paymentInfo['prepay_id']);
         $this->assertEquals('MWEB', $paymentInfo['trade_type']);
         $this->assertEquals('https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=wx201811111111111111', $paymentInfo['mweb_url']);
@@ -398,7 +402,7 @@ final class UnifiedOrderResponseTest extends TestCase
 
         $params = $response->generateMiniProgramPayParams('test_key');
 
-        $this->assertIsArray($params);
+        // generateMiniProgramPayParams() 返回类型已明确为 array<string, string>
         $this->assertArrayHasKey('appId', $params);
         $this->assertArrayHasKey('timeStamp', $params);
         $this->assertArrayHasKey('nonceStr', $params);
@@ -409,9 +413,7 @@ final class UnifiedOrderResponseTest extends TestCase
         $this->assertEquals('wx1234567890abcdef', $params['appId']);
         $this->assertEquals('prepay_id=wx201811111111111111', $params['package']);
         $this->assertEquals('MD5', $params['signType']);
-        $this->assertIsString($params['timeStamp']);
-        $this->assertIsString($params['nonceStr']);
-        $this->assertIsString($params['paySign']);
+        // 元素类型已由方法签名保证为 string,无需 assertIsString
     }
 
     #[Test]
@@ -423,7 +425,7 @@ final class UnifiedOrderResponseTest extends TestCase
         $params = $response->generateMiniProgramPayParams('test_key', SignatureService::SIGN_TYPE_HMAC_SHA256);
 
         $this->assertEquals('HMAC-SHA256', $params['signType']);
-        $this->assertIsString($params['paySign']);
+        // 元素类型已由方法签名保证为 string,无需 assertIsString
     }
 
     #[Test]
@@ -446,7 +448,7 @@ final class UnifiedOrderResponseTest extends TestCase
 
         $params = $response->generateAppPayParams('test_key');
 
-        $this->assertIsArray($params);
+        // generateAppPayParams() 返回类型已明确为 array<string, string>
         $this->assertArrayHasKey('appid', $params);
         $this->assertArrayHasKey('partnerid', $params);
         $this->assertArrayHasKey('prepayid', $params);
@@ -459,9 +461,7 @@ final class UnifiedOrderResponseTest extends TestCase
         $this->assertEquals('1234567890', $params['partnerid']);
         $this->assertEquals('wx201811111111111111', $params['prepayid']);
         $this->assertEquals('Sign=WXPay', $params['package']);
-        $this->assertIsString($params['noncestr']);
-        $this->assertIsString($params['timestamp']);
-        $this->assertIsString($params['sign']);
+        // 元素类型已由方法签名保证为 string,无需 assertIsString
     }
 
     #[Test]
@@ -484,7 +484,7 @@ final class UnifiedOrderResponseTest extends TestCase
 
         $params = $response->generateJsApiPayParams('test_key');
 
-        $this->assertIsArray($params);
+        // generateJsApiPayParams() 返回类型已明确为 array<string, string>
         $this->assertArrayHasKey('appId', $params);
         $this->assertArrayHasKey('timeStamp', $params);
         $this->assertArrayHasKey('nonceStr', $params);
@@ -659,13 +659,14 @@ final class UnifiedOrderResponseTest extends TestCase
 
         // 生成小程序支付参数
         $miniProgramParams = $response->generateMiniProgramPayParams('test_key');
-        $this->assertIsArray($miniProgramParams);
+        // generateMiniProgramPayParams() 返回类型已明确为 array<string, string>
         $this->assertArrayHasKey('appId', $miniProgramParams);
         $this->assertArrayHasKey('paySign', $miniProgramParams);
 
         // 转换为JSON
         $json = $response->toJson();
         $jsonData = json_decode($json, true);
+        // json_decode() 返回 mixed,保留类型断言验证结构
         $this->assertIsArray($jsonData);
         $this->assertArrayHasKey('success', $jsonData);
         $this->assertIsBool($jsonData['success']);
@@ -674,6 +675,7 @@ final class UnifiedOrderResponseTest extends TestCase
         // 获取调试信息
         $debugInfo = $response->getDebugInfo();
         $this->assertTrue($debugInfo['success']);
+        // raw_data 是 array<string, mixed> 的子元素,保留类型断言以验证结构
         $this->assertIsArray($debugInfo['raw_data']);
     }
 
@@ -695,6 +697,7 @@ final class UnifiedOrderResponseTest extends TestCase
         // 转换为JSON
         $json = $response->toJson();
         $jsonData = json_decode($json, true);
+        // json_decode() 返回 mixed,保留类型断言验证结构
         $this->assertIsArray($jsonData);
         $this->assertArrayHasKey('success', $jsonData);
         $this->assertArrayHasKey('error_code', $jsonData);

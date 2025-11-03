@@ -103,7 +103,8 @@ class WechatPayServiceTest extends AbstractIntegrationTestCase
         $result = $this->service->getPaymentParams($params);
 
         if ($shouldSucceed) {
-            $this->assertIsArray($result);
+            // getPaymentParams() 返回类型已明确为 array,验证结果非空即可
+            $this->assertNotEmpty($result);
         }
     }
 

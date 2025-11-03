@@ -168,15 +168,17 @@ final class PaymentEventBridgeSubscriberTest extends AbstractEventSubscriberTest
     }
 
     /**
-     * 创建模拟的 PayOrder 对象
+     * 创建 PayOrder 对象
+     *
+     * 注意：使用真实实体而非 Mock，因为 getId() 是 final 方法无法被 mock
      */
-    private function createMockPayOrder(int $id, int $totalFee, ?string $attach, ?string $tradeNo = null): PayOrder&MockObject
+    private function createMockPayOrder(int $id, int $totalFee, ?string $attach, ?string $tradeNo = null): PayOrder
     {
-        $payOrder = $this->createMock(PayOrder::class);
-        $payOrder->method('getId')->willReturn((string) $id); // PayOrder getId 返回 ?string
-        $payOrder->method('getTotalFee')->willReturn($totalFee);
-        $payOrder->method('getAttach')->willReturn($attach);
-        $payOrder->method('getTradeNo')->willReturn($tradeNo ?? "TRADE-NO-{$id}");
+        $payOrder = new PayOrder();
+        $payOrder->setId((string) $id);
+        $payOrder->setTotalFee($totalFee);
+        $payOrder->setAttach($attach);
+        $payOrder->setTradeNo($tradeNo ?? "TRADE-NO-{$id}");
 
         return $payOrder;
     }

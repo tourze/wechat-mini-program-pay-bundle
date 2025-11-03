@@ -332,8 +332,8 @@ final class PaymentEventBridgeEventSubscriberTest extends AbstractEventSubscribe
         $subscriber = self::getService(PaymentEventBridgeEventSubscriber::class);
 
         // 创建一个PayOrder mock，在getAttach()时抛出异常（这样不会在catch块中再次调用getId()）
+        // 注意：不能 mock getId()，因为它是 final 方法
         $payOrder = $this->createMock(PayOrder::class);
-        $payOrder->method('getId')->willReturn('test-id');
         $payOrder->method('getAttach')->willThrowException(new \RuntimeException('Test exception'));
 
         $account = $this->createMockAccount();
@@ -354,8 +354,8 @@ final class PaymentEventBridgeEventSubscriberTest extends AbstractEventSubscribe
         $subscriber = self::getService(PaymentEventBridgeEventSubscriber::class);
 
         // 创建一个PayOrder mock，在getAttach()时抛出异常（这样不会在catch块中再次调用getId()）
+        // 注意：不能 mock getId()，因为它是 final 方法
         $payOrder = $this->createMock(PayOrder::class);
-        $payOrder->method('getId')->willReturn('test-id');
         $payOrder->method('getAttach')->willThrowException(new \RuntimeException('Test exception'));
 
         $account = $this->createMockAccount();
@@ -371,15 +371,17 @@ final class PaymentEventBridgeEventSubscriberTest extends AbstractEventSubscribe
     }
 
     /**
-     * 创建模拟的 PayOrder 对象
+     * 创建 PayOrder 对象
+     *
+     * 注意：使用真实实体而非 Mock，因为 getId() 是 final 方法无法被 mock
      */
-    private function createMockPayOrder(int $id, int $totalFee, ?string $attach, ?string $tradeNo = null): PayOrder&MockObject
+    private function createMockPayOrder(int $id, int $totalFee, ?string $attach, ?string $tradeNo = null): PayOrder
     {
-        $payOrder = $this->createMock(PayOrder::class);
-        $payOrder->method('getId')->willReturn((string) $id);
-        $payOrder->method('getTotalFee')->willReturn($totalFee);
-        $payOrder->method('getAttach')->willReturn($attach);
-        $payOrder->method('getTradeNo')->willReturn($tradeNo ?? "TRADE-NO-{$id}");
+        $payOrder = new PayOrder();
+        $payOrder->setId((string) $id);
+        $payOrder->setTotalFee($totalFee);
+        $payOrder->setAttach($attach);
+        $payOrder->setTradeNo($tradeNo ?? "TRADE-NO-{$id}");
 
         return $payOrder;
     }

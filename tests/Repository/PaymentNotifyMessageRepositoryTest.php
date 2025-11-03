@@ -10,6 +10,8 @@ use WechatMiniProgramPayBundle\Entity\PaymentNotifyMessage;
 use WechatMiniProgramPayBundle\Repository\PaymentNotifyMessageRepository;
 
 /**
+ * @extends AbstractRepositoryTestCase<PaymentNotifyMessage>
+ *
  * @internal
  */
 #[CoversClass(PaymentNotifyMessageRepository::class)]

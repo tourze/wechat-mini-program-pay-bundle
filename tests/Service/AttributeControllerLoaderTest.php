@@ -58,9 +58,9 @@ final class AttributeControllerLoaderTest extends AbstractIntegrationTestCase
         // 测试 supports 方法
         $loader = self::getService(AttributeControllerLoader::class);
 
-        // 调用 supports 方法并验证返回类型
+        // 调用 supports 方法(返回类型已明确为 bool)
         $result = $loader->supports('test-resource');
-        $this->assertIsBool($result);
+        $this->assertFalse($result); // 验证默认实现返回 false
 
         // 验证方法可见性
         $reflection = new \ReflectionMethod(AttributeControllerLoader::class, 'supports');

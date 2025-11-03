@@ -325,7 +325,7 @@ class TradeTypeMapperTest extends AbstractIntegrationTestCase
     {
         $result = $this->mapper->getAllPaymentTypeInfo();
 
-        $this->assertIsArray($result);
+        // getAllPaymentTypeInfo() 返回类型已明确为 array
         $this->assertCount(5, $result); // 5个支持的支付类型
 
         foreach ($result as $info) {
