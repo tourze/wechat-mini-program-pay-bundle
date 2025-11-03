@@ -11,6 +11,7 @@ use Tourze\JsonRPCSecurityBundle\JsonRPCSecurityBundle;
 use Tourze\RoutingAutoLoaderBundle\RoutingAutoLoaderBundle;
 use WechatMiniProgramAuthBundle\WechatMiniProgramAuthBundle;
 use WechatPayBundle\WechatPayBundle;
+use Tourze\EasyAdminMenuBundle\EasyAdminMenuBundle;
 
 class WechatMiniProgramPayBundle extends Bundle implements BundleDependencyInterface
 {
@@ -24,6 +25,7 @@ class WechatMiniProgramPayBundle extends Bundle implements BundleDependencyInter
             JsonRPCLockBundle::class => ['all' => true],
             JsonRPCSecurityBundle::class => ['all' => true],
             RoutingAutoLoaderBundle::class => ['all' => true],
+            EasyAdminMenuBundle::class => ['all' => true],
         ];
     }
 }
