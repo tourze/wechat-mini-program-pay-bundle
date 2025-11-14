@@ -15,7 +15,7 @@ class PaymentNotifyMessage implements \Stringable
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
-    private ?int $id = null; // @phpstan-ignore property.unusedType (Doctrine auto-assigns this)
+    private ?int $id = null;
 
     #[Assert\Length(max: 65535)]
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '原始数据'])]
